@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RepoMind AI</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 380px;
+      min-height: 120px;
+      background: #0a0a0a;
+      color: #f5f5f5;
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+      font-size: 13px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 14px;
+      border-bottom: 1px solid #1f1f1f;
+    }
+
+    .logo {
+      width: 22px; height: 22px;
+      background: white;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    header h1 { font-size: 13px; font-weight: 700; }
+    header span { font-size: 10px; color: #555; margin-left: auto; }
+
+    #state-idle, #state-loading, #state-error, #state-result {
+      display: none;
+      padding: 14px;
+    }
+
+    #state-idle { display: block; }
+
+    .not-github {
+      text-align: center;
+      padding: 20px 14px;
+    }
+    .not-github p { color: #666; font-size: 12px; margin-top: 6px; }
+
+    .btn {
+      width: 100%;
+      padding: 10px;
+      background: white;
+      color: black;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn:hover { background: #e5e5e5; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-ghost {
+      background: #1a1a1a;
+      color: #aaa;
+      border: 1px solid #2a2a2a;
+    }
+    .btn-ghost:hover { background: #222; color: white; }
+
+    .repo-info {
+      background: #111;
+      border: 1px solid #1f1f1f;
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+    }
+    .repo-info strong { font-size: 13px; font-weight: 600; }
+    .repo-info p { color: #666; font-size: 11px; margin-top: 3px; }
+
+    /* Loading */
+    .spinner-wrap {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 12px; padding: 20px 14px;
+    }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 2px solid #222;
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner-wrap p { color: #888; font-size: 12px; text-align: center; }
+
+    /* Result */
+    .section { margin-bottom: 12px; }
+    .section-title {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #555;
+      margin-bottom: 6px;
+    }
+    .tags { display: flex; flex-wrap: wrap; gap: 4px; }
+    .tag {
+      padding: 2px 8px;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 20px;
+      font-size: 11px;
+      color: #ccc;
+    }
+    .arch { font-size: 12px; color: #ccc; line-height: 1.5; }
+    .feature-list { list-style: none; }
+    .feature-list li {
+      font-size: 12px;
+      color: #bbb;
+      padding: 2px 0;
+      display: flex; align-items: flex-start; gap: 6px;
+    }
+    .feature-list li::before { content: "•"; color: #555; flex-shrink: 0; }
+
+    .actions { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
+
+    .error-msg {
+      background: #1a0a0a;
+      border: 1px solid #4a1a1a;
+      border-radius: 10px;
+      padding: 12px;
+      color: #f87171;
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+    </svg>
+  </div>
+  <h1>RepoMind AI</h1>
+  <span>AI Repo Analyzer</span>
+</header>
+
+<!-- IDLE -->
+<div id="state-idle">
+  <div id="idle-github">
+    <div class="repo-info">
+      <strong id="repo-name">Loading...</strong>
+      <p id="repo-url-display"></p>
+    </div>
+    <button class="btn" id="btn-analyze">Analyze this repo</button>
+  </div>
+  <div id="idle-not-github" class="not-github" style="display:none">
+    <p>Open a GitHub repository to analyze it.</p>
+    <p style="margin-top: 8px; color: #444;">github.com/owner/repo</p>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div id="state-loading">
+  <div class="spinner-wrap">
+    <div class="spinner"></div>
+    <p id="loading-msg">Running 4 AI agents...</p>
+  </div>
+</div>
+
+<!-- ERROR -->
+<div id="state-error" style="display:none; padding: 14px;">
+  <div class="error-msg" id="error-text"></div>
+  <button class="btn btn-ghost" id="btn-retry">Try again</button>
+</div>
+
+<!-- RESULT -->
+<div id="state-result">
+  <div class="section">
+    <div class="section-title">Tech Stack</div>
+    <div class="tags" id="res-stack"></div>
+  </div>
+  <div class="section">
+    <div class="section-title">Architecture</div>
+    <p class="arch" id="res-arch"></p>
+  </div>
+  <div class="section">
+    <div class="section-title">Core Features</div>
+    <ul class="feature-list" id="res-features"></ul>
+  </div>
+  <div class="actions">
+    <button class="btn" id="btn-open-full">Open Full Analysis ↗</button>
+    <button class="btn btn-ghost" id="btn-reset">Analyze another repo</button>
+  </div>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>
