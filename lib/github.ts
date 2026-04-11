@@ -76,19 +76,20 @@ export async function fetchRepoData(repoUrl: string): Promise<RepoData> {
     fetchTree(base),
   ]);
 
-  // Fetch important config files
-  const files: RepoFiles = {
-    packageJson: await fetchFile(base, "package.json"),
-    tsconfig: await fetchFile(base, "tsconfig.json"),
-    dockerfile: await fetchFile(base, "Dockerfile"),
-    requirements: await fetchFile(base, "requirements.txt"),
-    composerJson: await fetchFile(base, "composer.json"),
-    gemfile: await fetchFile(base, "Gemfile"),
-    cargoToml: await fetchFile(base, "Cargo.toml"),
-    goMod: await fetchFile(base, "go.mod"),
-    envExample: await fetchFile(base, ".env.example"),
-    ciConfig: await fetchFile(base, ".github/workflows/ci.yml"),
-  };
+  // Fetch all config files in parallel
+  const [packageJson, tsconfig, dockerfile, requirements, composerJson, gemfile, cargoToml, goMod, envExample, ciConfig] = await Promise.all([
+    fetchFile(base, "package.json"),
+    fetchFile(base, "tsconfig.json"),
+    fetchFile(base, "Dockerfile"),
+    fetchFile(base, "requirements.txt"),
+    fetchFile(base, "composer.json"),
+    fetchFile(base, "Gemfile"),
+    fetchFile(base, "Cargo.toml"),
+    fetchFile(base, "go.mod"),
+    fetchFile(base, ".env.example"),
+    fetchFile(base, ".github/workflows/ci.yml"),
+  ]);
+  const files: RepoFiles = { packageJson, tsconfig, dockerfile, requirements, composerJson, gemfile, cargoToml, goMod, envExample, ciConfig };
 
   return {
     meta,

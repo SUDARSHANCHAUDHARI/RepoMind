@@ -12,12 +12,19 @@ function buildContext(data: RepoData): string {
     .slice(0, 80)
     .join("\n");
 
+  const foundFiles = Object.entries(data.files)
+    .filter(([, v]) => v.length > 0)
+    .map(([k]) => k)
+    .join(", ");
+
   return `
 REPO NAME: ${data.meta.name}
 DESCRIPTION: ${data.meta.description || "none"}
 LANGUAGE: ${data.meta.language || "unknown"}
 STARS: ${data.meta.stargazers_count}
 TOPICS: ${(data.meta.topics || []).join(", ") || "none"}
+
+DETECTED CONFIG FILES: ${foundFiles || "none"}
 
 ROOT FILES:
 ${data.structure.join(", ")}

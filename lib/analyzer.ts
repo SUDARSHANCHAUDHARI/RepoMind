@@ -9,8 +9,9 @@ function getClient() {
 async function runAgent<T>(prompt: string, fallback: T): Promise<T> {
   try {
     const res = await getClient().chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4.1",
       temperature: 0.15,
+      max_tokens: 2048,
       messages: [{ role: "user", content: prompt }],
       response_format: { type: "json_object" },
     });

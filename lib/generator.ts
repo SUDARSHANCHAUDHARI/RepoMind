@@ -42,8 +42,9 @@ Return ONLY valid JSON in this exact shape:
 
   try {
     const res = await client.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4.1",
       temperature: 0.2,
+      max_tokens: 4096,
       messages: [{ role: "user", content: prompt }],
       response_format: { type: "json_object" },
     });
