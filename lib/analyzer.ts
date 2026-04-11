@@ -2,13 +2,13 @@ import OpenAI from "openai";
 import { architectPrompt, featurePrompt, criticPrompt, builderPrompt } from "./prompts";
 import { RepoData, RepoAnalysis, ArchitectAnalysis, FeatureAnalysis, CriticAnalysis, BuilderAnalysis } from "@/types";
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+function getClient() {
+  return new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+}
 
 async function runAgent<T>(prompt: string, fallback: T): Promise<T> {
   try {
-    const res = await client.chat.completions.create({
+    const res = await getClient().chat.completions.create({
       model: "gpt-4o",
       temperature: 0.15,
       messages: [{ role: "user", content: prompt }],
