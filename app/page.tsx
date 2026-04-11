@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import JSZip from "jszip";
 import { RepoAnalysis } from "@/types";
 
@@ -55,7 +56,13 @@ function Badge({ text, color = "default" }: { text: string; color?: string }) {
 }
 
 // ─── Card ─────────────────────────────────────────────────────────────────────
-function Card({ title, icon, children, className = "" }: any) {
+interface CardProps {
+  title?: string;
+  icon?: React.ReactNode;
+  children: React.ReactNode;
+  className?: string;
+}
+function Card({ title, icon, children, className = "" }: CardProps) {
   return (
     <div className={`bg-zinc-900 border border-zinc-800 rounded-2xl p-5 ${className}`}>
       {title && (
@@ -156,7 +163,8 @@ function LoadingState({ step }: { step: number }) {
 }
 
 // ─── Main App ─────────────────────────────────────────────────────────────────
-export default function Home() {
+function HomeInner() {
+  const searchParams = useSearchParams();
   const [url, setUrl] = useState("");
   const [result, setResult] = useState<RepoAnalysis | null>(null);
   const [loading, setLoading] = useState(false);
@@ -166,8 +174,7 @@ export default function Home() {
   const [error, setError] = useState("");
   const [tweet, setTweet] = useState("");
 
-  async function analyze() {
-    if (!url.trim()) return;
+  async function analyzeUrl(repoUrl: string) {
     setLoading(true);
     setError("");
     setResult(null);
@@ -181,18 +188,34 @@ export default function Home() {
       const res = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ repoUrl: url.trim() }),
+        body: JSON.stringify({ repoUrl }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Analysis failed");
+      const data = await res.json() as RepoAnalysis & { error?: string };
+      if (!res.ok) throw new Error(data.error ?? "Analysis failed");
       setResult(data);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Analysis failed");
     } finally {
       clearInterval(stepInterval);
       setLoadingStep(0);
       setLoading(false);
     }
+  }
+
+  // Auto-analyze when Chrome extension passes ?repo= query param
+  useEffect(() => {
+    const repoParam = searchParams.get("repo");
+    if (repoParam) {
+      setUrl(repoParam);
+      void analyzeUrl(repoParam);
+    }
+  // analyzeUrl is stable (defined inside component, no deps change) — safe to omit
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function analyze() {
+    if (!url.trim()) return;
+    void analyzeUrl(url.trim());
   }
 
   async function downloadStarterRepo() {
@@ -545,5 +568,13 @@ export default function Home() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={null}>
+      <HomeInner />
+    </Suspense>
   );
 }

@@ -1,4 +1,4 @@
-import { RepoData } from "@/types";
+import { RepoData, ArchitectAnalysis, FeatureAnalysis, CriticAnalysis } from "@/types";
 
 function buildContext(data: RepoData): string {
   const fileSummary = Object.entries(data.files)
@@ -106,10 +106,10 @@ Return this exact JSON shape:
 
 // ─── Agent 4: Startup CTO / Builder ───────────────────────────────────────────
 export function builderPrompt(context: {
-  architect: object;
-  features: object;
-  critic: object;
-  meta: object;
+  architect: ArchitectAnalysis;
+  features: FeatureAnalysis;
+  critic: CriticAnalysis;
+  meta: { name: string; description: string; language: string; stars: number };
 }): string {
   return `You are a startup CTO who has shipped dozens of products.
 

@@ -6,6 +6,9 @@ node_modules/
 out/
 dist/
 
+# TypeScript incremental build info
+tsconfig.tsbuildinfo
+
 # Environment variables — never commit real keys
 .env
 .env.local

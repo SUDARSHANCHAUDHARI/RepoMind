@@ -53,7 +53,7 @@ async function fetchContents(base: string): Promise<string[]> {
     const res = await axios.get(`${base}/contents`, {
       headers: getHeaders(),
     });
-    return res.data.map((f: any) => f.name);
+    return (res.data as { name: string }[]).map((f) => f.name);
   } catch {
     return [];
   }
