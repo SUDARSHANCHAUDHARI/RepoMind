@@ -37,3 +37,6 @@ npm-debug.log*
 secrets.*
 credentials.*
 PLAN.md
+
+# graphify knowledge graph
+graphify-out/
