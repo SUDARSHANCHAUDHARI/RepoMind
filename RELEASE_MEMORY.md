@@ -48,3 +48,4 @@ Run local API smoke tests with real env vars.
 - Re-ran `pnpm build` and `pnpm exec tsc --noEmit`; both passed.
 - Updated `.env.example`, README, and extension docs to use `YOUR_*` placeholders for secrets/domains.
 - Re-ran `pnpm build`; passed after placeholder cleanup.
+- Polished README using the MyFamilyTracker-style structure: status, technical decisions, features, setup, env vars, extension, deployment, architecture, tech stack, verification, limits, roadmap, and author.
