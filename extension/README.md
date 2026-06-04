@@ -23,7 +23,7 @@ const APP_URL = "http://localhost:3000";
 ```
 to your deployed URL, e.g.:
 ```js
-const APP_URL = "https://repomind.ai";
+const APP_URL = "https://YOUR_APP_DOMAIN";
 ```
 
 ## Icons

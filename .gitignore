@@ -5,6 +5,7 @@ node_modules/
 .next/
 out/
 dist/
+.vercel/
 
 # TypeScript incremental build info
 tsconfig.tsbuildinfo
