@@ -37,14 +37,15 @@ npm install
 ### 3. Add API keys
 
 ```bash
-cp .env.local.example .env.local
+cp .env.example .env.local
 ```
 
 Edit `.env.local`:
 
 ```
-OPENAI_API_KEY=sk-your-key-here
-GITHUB_TOKEN=ghp_your-token-here   # optional but recommended
+OPENAI_API_KEY=YOUR_OPENAI_API_KEY
+GITHUB_TOKEN=YOUR_GITHUB_TOKEN   # optional but recommended
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
 Get your OpenAI key: https://platform.openai.com/api-keys  
@@ -125,18 +126,38 @@ Works on any `github.com/owner/repo` page. Shows stack + features in the popup, 
 |---|---|---|
 | `OPENAI_API_KEY` | ✅ Yes | GPT-4o access |
 | `GITHUB_TOKEN` | ⚡ Recommended | Raises rate limit from 60 → 5000 req/hr |
-| `NEXT_PUBLIC_APP_URL` | Optional | For share links in production |
+| `NEXT_PUBLIC_APP_URL` | Recommended | App URL for share links and extension handoff |
 
 ---
 
-## Deploy to Vercel
+## Deploy to Cloudflare Pages
+
+RepoMind uses Next API routes, so deploy it as a Next.js runtime app, not a static export.
+
+Recommended production setup:
+
+- Framework preset: `Next.js`
+- Build command: `pnpm build:cloudflare`
+- Build output directory: `.vercel/output/static`
+- Node version: `20.19.6`
+- Production branch: `main`
+
+Set these environment variables in Cloudflare Pages:
+
+- `OPENAI_API_KEY`
+- `GITHUB_TOKEN` optional but recommended
+- `NEXT_PUBLIC_APP_URL` with the production URL
+
+After deployment, update `extension/popup.js` so `APP_URL` points to the production app.
+
+## Local Verification
 
 ```bash
-npm i -g vercel
-vercel
+pnpm build
+pnpm exec tsc --noEmit
 ```
 
-Add env vars in the Vercel dashboard. Done.
+Smoke-test `/api/analyze`, `/api/generate`, and `/api/share` with real environment variables before launch.
 
 ---
 
