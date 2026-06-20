@@ -6,7 +6,7 @@ function getHeaders() {
   return token ? { Authorization: `token ${token}` } : {};
 }
 
-function parseOwnerRepo(repoUrl: string): { owner: string; repo: string } {
+export function parseOwnerRepo(repoUrl: string): { owner: string; repo: string } {
   // Handle URLs like: https://github.com/owner/repo or github.com/owner/repo
   const clean = repoUrl.replace(/^https?:\/\//, "").replace(/\/$/, "");
   const match = clean.match(/github\.com\/([^/]+)\/([^/]+)/);
