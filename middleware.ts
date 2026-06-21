@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // Simple in-memory rate limiter
-// For production, swap this with Upstash Redis or Vercel KV
+// For production, swap this with a shared KV (Cloudflare KV, Upstash Redis, etc.)
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 
 const WINDOW_MS = 60 * 1000; // 1 minute window

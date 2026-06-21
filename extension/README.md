@@ -9,7 +9,7 @@
 
 ## Usage
 
-1. Open any GitHub repo (e.g. `https://github.com/vercel/next.js`)
+1. Open any GitHub repo (e.g. `https://github.com/facebook/react`)
 2. Click the RepoMind AI extension icon
 3. Click **Analyze this repo**
 4. View stack, architecture, and core features in the popup

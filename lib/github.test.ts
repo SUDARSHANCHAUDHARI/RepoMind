@@ -3,9 +3,9 @@ import { parseOwnerRepo } from "./github";
 
 describe("parseOwnerRepo", () => {
   it("parses a standard https GitHub URL", () => {
-    expect(parseOwnerRepo("https://github.com/vercel/next.js")).toEqual({
-      owner: "vercel",
-      repo: "next.js",
+    expect(parseOwnerRepo("https://github.com/microsoft/typescript")).toEqual({
+      owner: "microsoft",
+      repo: "typescript",
     });
   });
 

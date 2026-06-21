@@ -18,7 +18,7 @@
 ## What's left
 
 - **Chrome extension** (in `extension/` folder) — present but unclear current status; needs an audit pass to confirm it builds and matches the web app
-- **Live deploy** to Vercel needs `OPENAI_API_KEY` (and optional `GITHUB_TOKEN` for higher API rate limits)
+- **Live deploy** to your own host needs `OPENAI_API_KEY` (and optional `GITHUB_TOKEN` for higher API rate limits). Stock Next.js — pick whatever Node/static host fits your existing flow.
 - Optional: rate limiting on the API routes (currently unprotected — fine for personal use, risky for public)
 - Optional: caching of GitHub API responses (each analyze hits the API for ~12 endpoints)
 
@@ -33,4 +33,4 @@
 
 ## Deployment
 
-Not yet deployed. `vercel.json` present, zero extra config needed beyond the env keys above.
+Not yet deployed. Self-hosted on your own domain — deploy via the same Node/static flow you already use for your other apps.

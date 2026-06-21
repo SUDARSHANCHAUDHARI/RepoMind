@@ -69,7 +69,7 @@ pnpm exec tsc --noEmit
 
 **JSON-mode responses make the UI predictable.** AI responses are requested as JSON objects and parsed into typed analysis sections. Fallback objects keep the UI usable if one agent fails.
 
-**Cloudflare Pages is the preferred deployment target.** The project already has `build:cloudflare`, `_headers`, `.nvmrc`, and `.vercel/` ignore setup. Because the app uses API routes, it should deploy as a Next runtime app, not a static export.
+**Cloudflare Pages is the preferred deployment target.** The project already has `build:cloudflare`, `_headers`, and `.nvmrc` set up. Because the app uses API routes, it should deploy as a Next runtime app, not a static export.
 
 ## Features
 
@@ -179,7 +179,7 @@ Recommended Cloudflare Pages settings:
 |---|---|
 | Framework preset | `Next.js` |
 | Build command | `pnpm build:cloudflare` |
-| Build output directory | `.vercel/output/static` |
+| Build output directory | (auto-detected by Cloudflare's Next-on-Pages adapter — see the [`@cloudflare/next-on-pages` README](https://github.com/cloudflare/next-on-pages) for the exact path the tool emits) |
 | Node version | `20.19.6` |
 | Production branch | `main` |
 
