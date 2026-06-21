@@ -72,3 +72,27 @@ Not yet deployed. Self-hosted on your own domain — deploy via the same Node/st
 - [ ] Rate limiting on API routes (`middleware.ts` is in-memory; swap to shared KV)
 - [ ] Caching GitHub API responses (each analyze hits ~12 endpoints)
 - [ ] Audit `extension/` folder — Chrome extension present but status unverified
+
+## Categorized work remaining
+
+| Item | Effort | Bucket | Blocker | Priority |
+|------|--------|--------|---------|----------|
+| Swap in-memory rate limiter for shared KV | ~3h | 🟦 Pure code | Cloudflare KV or Upstash Redis client + binding (one-time setup on Cloudflare side) | P2 |
+| Cache GitHub API responses (per repo, short TTL) | ~3h | 🟦 Pure code | none — use the same KV layer or a simple in-process cache | P2 |
+| Audit `extension/` folder | ~1–2h | 🟦 Pure code | none — verify it builds + matches the web app's contract | P3 |
+| Live deploy to Cloudflare Pages | ~30m | 🔑 Needs creds | `OPENAI_API_KEY` (+ optional `GITHUB_TOKEN` for higher API rate limits) | P1 |
+
+## Release plan
+
+1. **Bounded engineering:** add shared KV rate limiter, GitHub response caching, audit/fix the Chrome extension.
+2. **Deploy:**
+   - Cloudflare Pages: connect the GitHub repo, set build command `pnpm build:cloudflare`, set the env vars above
+   - Confirm `/api/analyze?url=https://github.com/facebook/react` returns valid JSON
+3. **Tag release:** `gh release create v1.0.0 --title "RepoMind v1.0.0 — 4-agent GitHub repo analyzer"`
+4. **Optional:** publish the Chrome extension to the Web Store (separate flow, needs developer account).
+
+### Deploy prerequisites
+- `OPENAI_API_KEY` — required
+- `GITHUB_TOKEN` — optional but recommended (higher GitHub API rate limits)
+- `NEXT_PUBLIC_APP_URL` — your live URL
+- Cloudflare account (free tier works)
