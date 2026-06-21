@@ -329,7 +329,7 @@ function HomeInner() {
           <div className="flex flex-wrap gap-2 mb-10">
             <span className="text-zinc-600 text-xs py-1">Try:</span>
             {[
-              "vercel/next.js",
+              "facebook/react",
               "supabase/supabase",
               "calcom/cal.com",
               "steven-tey/dub",

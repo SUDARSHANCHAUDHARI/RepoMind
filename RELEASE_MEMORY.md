@@ -42,7 +42,7 @@ Run local API smoke tests with real env vars.
 ## Latest Prep Notes
 
 - Added `build:cloudflare` for Cloudflare Pages Next deployment.
-- Added `.nvmrc`, static `_headers`, and `.vercel/` ignore.
+- Added `.nvmrc`, static `_headers`, and gitignored the Cloudflare Next-on-Pages output directory.
 - Fixed README env example path from `.env.local.example` to `.env.example`.
 - Updated README with Cloudflare Pages settings and local verification commands.
 - Re-ran `pnpm build` and `pnpm exec tsc --noEmit`; both passed.
