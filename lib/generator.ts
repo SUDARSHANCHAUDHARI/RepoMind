@@ -1,8 +1,8 @@
 import OpenAI from "openai";
 import { RepoAnalysis, GeneratedProject } from "@/types";
 
-export async function generateStarterRepo(analysis: RepoAnalysis): Promise<GeneratedProject> {
-  const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+export async function generateStarterRepo(analysis: RepoAnalysis, apiKey: string): Promise<GeneratedProject> {
+  const client = new OpenAI({ apiKey });
   const prompt = `You are a senior full-stack engineer who writes clean, production-ready boilerplate.
 
 Based on this repo analysis, generate a real working starter project.

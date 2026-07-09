@@ -2,13 +2,13 @@ import OpenAI from "openai";
 import { architectPrompt, featurePrompt, criticPrompt, builderPrompt } from "./prompts";
 import { RepoData, RepoAnalysis, ArchitectAnalysis, FeatureAnalysis, CriticAnalysis, BuilderAnalysis } from "@/types";
 
-function getClient() {
-  return new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+function getClient(apiKey: string) {
+  return new OpenAI({ apiKey });
 }
 
-async function runAgent<T>(prompt: string, fallback: T): Promise<T> {
+async function runAgent<T>(prompt: string, fallback: T, apiKey: string): Promise<T> {
   try {
-    const res = await getClient().chat.completions.create({
+    const res = await getClient(apiKey).chat.completions.create({
       model: "gpt-4.1",
       temperature: 0.15,
       max_tokens: 2048,
@@ -57,12 +57,12 @@ const fallbackBuilder: BuilderAnalysis = {
   estimatedBuildTime: "unknown",
 };
 
-export async function analyzeRepo(data: RepoData): Promise<RepoAnalysis> {
+export async function analyzeRepo(data: RepoData, apiKey: string): Promise<RepoAnalysis> {
   // Run first 3 agents in parallel
   const [architect, features, critic] = await Promise.all([
-    runAgent<ArchitectAnalysis>(architectPrompt(data), fallbackArchitect),
-    runAgent<FeatureAnalysis>(featurePrompt(data), fallbackFeatures),
-    runAgent<CriticAnalysis>(criticPrompt(data), fallbackCritic),
+    runAgent<ArchitectAnalysis>(architectPrompt(data), fallbackArchitect, apiKey),
+    runAgent<FeatureAnalysis>(featurePrompt(data), fallbackFeatures, apiKey),
+    runAgent<CriticAnalysis>(criticPrompt(data), fallbackCritic, apiKey),
   ]);
 
   // Builder agent synthesizes all three
@@ -78,7 +78,8 @@ export async function analyzeRepo(data: RepoData): Promise<RepoAnalysis> {
         stars: data.meta.stargazers_count,
       },
     }),
-    fallbackBuilder
+    fallbackBuilder,
+    apiKey
   );
 
   return {

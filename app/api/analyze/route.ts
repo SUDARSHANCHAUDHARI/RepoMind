@@ -20,8 +20,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Bring-your-own-key: user's OpenAI key, supplied per request, never stored server-side.
+    const apiKey = req.headers.get("x-api-key") ?? "";
+    if (!apiKey) {
+      return NextResponse.json({ error: "Add your OpenAI API key in Settings to analyze a repo." }, { status: 401 });
+    }
+
     const repoData = await fetchRepoData(repoUrl);
-    const analysis = await analyzeRepo(repoData);
+    const analysis = await analyzeRepo(repoData, apiKey);
 
     return NextResponse.json(analysis);
   } catch (err: any) {

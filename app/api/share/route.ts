@@ -3,7 +3,12 @@ import OpenAI from "openai";
 import { RepoAnalysis } from "@/types";
 
 export async function POST(req: NextRequest) {
-  const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  // Bring-your-own-key: user's OpenAI key, supplied per request, never stored server-side.
+  const apiKey = req.headers.get("x-api-key") ?? "";
+  if (!apiKey) {
+    return NextResponse.json({ error: "Add your OpenAI API key in Settings first." }, { status: 401 });
+  }
+  const client = new OpenAI({ apiKey });
   try {
     const analysis: RepoAnalysis = await req.json();
 

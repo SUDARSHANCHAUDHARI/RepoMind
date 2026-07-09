@@ -4,6 +4,8 @@ import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import JSZip from "jszip";
 import { RepoAnalysis } from "@/types";
+import ApiKeySettings from "@/components/ApiKeySettings";
+import { getAiHeaders } from "@/lib/apiKey";
 
 // ─── Icons (inline SVG to avoid extra deps) ──────────────────────────────────
 function Icon({ name }: { name: string }) {
@@ -187,7 +189,7 @@ function HomeInner() {
     try {
       const res = await fetch("/api/analyze", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...getAiHeaders() },
         body: JSON.stringify({ repoUrl }),
       });
       const data = await res.json() as RepoAnalysis & { error?: string };
@@ -224,7 +226,7 @@ function HomeInner() {
     try {
       const res = await fetch("/api/generate", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...getAiHeaders() },
         body: JSON.stringify(result),
       });
       const data = await res.json();
@@ -250,7 +252,7 @@ function HomeInner() {
     if (!result) return;
     const res = await fetch("/api/share", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...getAiHeaders() },
       body: JSON.stringify(result),
     });
     const data = await res.json();
@@ -278,7 +280,10 @@ function HomeInner() {
             <span className="font-bold text-lg tracking-tight">RepoMind AI</span>
             <span className="text-xs text-zinc-600 ml-1 font-medium bg-zinc-900 px-2 py-0.5 rounded-full border border-zinc-800">v1.0</span>
           </div>
-          <p className="text-zinc-600 text-sm hidden sm:block">Turn any GitHub repo into a rebuildable blueprint</p>
+          <div className="flex items-center gap-4">
+            <p className="text-zinc-600 text-sm hidden sm:block">Turn any GitHub repo into a rebuildable blueprint</p>
+            <ApiKeySettings />
+          </div>
         </div>
       </header>
 
