@@ -69,7 +69,7 @@ pnpm exec tsc --noEmit
 
 **JSON-mode responses make the UI predictable.** AI responses are requested as JSON objects and parsed into typed analysis sections. Fallback objects keep the UI usable if one agent fails.
 
-**Cloudflare Pages is the preferred deployment target.** The project already has `build:cloudflare`, `_headers`, and `.nvmrc` set up. Because the app uses API routes, it should deploy as a Next runtime app, not a static export.
+**Deployed on Cloudflare Pages** as a static export plus native Pages Functions. The frontend is a static export (`npx next build` → `out`); the former Next API routes (`analyze`, `generate`, `share`) run as Pages Functions under `functions/api/`, with the `nodejs_compat` flag for `Buffer` and the OpenAI SDK. Live at `repomind.sudarshantechlabs.com`.
 
 ## Features
 
@@ -115,19 +115,13 @@ pnpm install
 
 ### Configure
 
-```bash
-cp .env.example .env.local
-```
+No `.env` is required to run. **The OpenAI key is bring-your-own-key** — each
+visitor adds their own key in the app's Settings; it is stored only in their
+browser and sent per request (`x-api-key` header), so hosting the app publicly
+never bills your account.
 
-Edit `.env.local`:
-
-```env
-OPENAI_API_KEY=YOUR_OPENAI_API_KEY
-GITHUB_TOKEN=YOUR_GITHUB_TOKEN
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-```
-
-For public repositories, `GITHUB_TOKEN` can be omitted, but GitHub API rate limits will be lower.
+An optional `GITHUB_TOKEN` env var raises the GitHub API rate limit when reading
+repos; without it, public repos still work at the lower anonymous limit.
 
 ### Run Locally
 
