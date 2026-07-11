@@ -1,25 +1,39 @@
-import axios from "axios";
 import { RepoData, RepoFiles, TreeItem } from "@/types";
 
-function getHeaders() {
-  const token = process.env.GITHUB_TOKEN;
-  return token ? { Authorization: `token ${token}` } : {};
+// GitHub REST calls via the Web fetch API (works on Cloudflare Workers).
+// GITHUB_TOKEN is optional — unauthenticated requests work at a lower rate limit.
+function getHeaders(): Record<string, string> {
+  const token = typeof process !== "undefined" ? process.env.GITHUB_TOKEN : undefined;
+  const headers: Record<string, string> = {
+    Accept: "application/vnd.github+json",
+    "User-Agent": "RepoMind/1.0 (+https://github.com/SUDARSHANCHAUDHARI/RepoMind)",
+  };
+  if (token) headers.Authorization = `token ${token}`;
+  return headers;
+}
+
+// Decode base64 (GitHub content API) to UTF-8. Uses Buffer (nodejs_compat).
+function decodeBase64(content: string): string {
+  return Buffer.from(content, "base64").toString("utf-8");
 }
 
 export function parseOwnerRepo(repoUrl: string): { owner: string; repo: string } {
-  // Handle URLs like: https://github.com/owner/repo or github.com/owner/repo
   const clean = repoUrl.replace(/^https?:\/\//, "").replace(/\/$/, "");
   const match = clean.match(/github\.com\/([^/]+)\/([^/]+)/);
   if (!match) throw new Error("Invalid GitHub URL. Example: https://github.com/owner/repo");
   return { owner: match[1], repo: match[2].replace(/\.git$/, "") };
 }
 
+async function getJSON(url: string): Promise<unknown> {
+  const res = await fetch(url, { headers: getHeaders() });
+  if (!res.ok) throw new Error(`GitHub API ${res.status}`);
+  return res.json();
+}
+
 async function fetchFile(base: string, path: string): Promise<string> {
   try {
-    const res = await axios.get(`${base}/contents/${path}`, {
-      headers: getHeaders(),
-    });
-    return Buffer.from(res.data.content, "base64").toString("utf-8");
+    const data = (await getJSON(`${base}/contents/${path}`)) as { content?: string };
+    return data.content ? decodeBase64(data.content) : "";
   } catch {
     return "";
   }
@@ -27,10 +41,8 @@ async function fetchFile(base: string, path: string): Promise<string> {
 
 async function fetchReadme(base: string): Promise<string> {
   try {
-    const res = await axios.get(`${base}/readme`, {
-      headers: getHeaders(),
-    });
-    return Buffer.from(res.data.content, "base64").toString("utf-8");
+    const data = (await getJSON(`${base}/readme`)) as { content?: string };
+    return data.content ? decodeBase64(data.content) : "";
   } catch {
     return "";
   }
@@ -38,11 +50,8 @@ async function fetchReadme(base: string): Promise<string> {
 
 async function fetchTree(base: string): Promise<TreeItem[]> {
   try {
-    const res = await axios.get(`${base}/git/trees/HEAD?recursive=1`, {
-      headers: getHeaders(),
-    });
-    // Limit to 150 paths — enough signal without bloat
-    return (res.data.tree as TreeItem[]).slice(0, 150);
+    const data = (await getJSON(`${base}/git/trees/HEAD?recursive=1`)) as { tree: TreeItem[] };
+    return (data.tree ?? []).slice(0, 150);
   } catch {
     return [];
   }
@@ -50,10 +59,8 @@ async function fetchTree(base: string): Promise<TreeItem[]> {
 
 async function fetchContents(base: string): Promise<string[]> {
   try {
-    const res = await axios.get(`${base}/contents`, {
-      headers: getHeaders(),
-    });
-    return (res.data as { name: string }[]).map((f) => f.name);
+    const data = (await getJSON(`${base}/contents`)) as { name: string }[];
+    return data.map((f) => f.name);
   } catch {
     return [];
   }
@@ -63,20 +70,15 @@ export async function fetchRepoData(repoUrl: string): Promise<RepoData> {
   const { owner, repo } = parseOwnerRepo(repoUrl);
   const base = `https://api.github.com/repos/${owner}/${repo}`;
 
-  const headers = getHeaders();
+  // Fetch repo metadata first (throws on invalid/private repo so the route can 4xx).
+  const meta = (await getJSON(base)) as RepoData["meta"];
 
-  // Fetch repo metadata first
-  const repoRes = await axios.get(base, { headers });
-  const meta = repoRes.data;
-
-  // Fetch everything in parallel
   const [readme, structure, tree] = await Promise.all([
     fetchReadme(base),
     fetchContents(base),
     fetchTree(base),
   ]);
 
-  // Fetch all config files in parallel
   const [packageJson, tsconfig, dockerfile, requirements, composerJson, gemfile, cargoToml, goMod, envExample, ciConfig] = await Promise.all([
     fetchFile(base, "package.json"),
     fetchFile(base, "tsconfig.json"),
