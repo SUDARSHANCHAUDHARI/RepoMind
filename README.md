@@ -157,6 +157,7 @@ Setup:
 
 The extension calls `https://repomind.sudarshantechlabs.com` by default. To use another app URL
 (for example `http://localhost:3000` in local development), set it on the extension's Options page.
+The popup needs your own OpenAI API key, also set on the Options page and stored only on that device.
 
 See [extension/README.md](extension/README.md) for the extension-specific guide.
 
