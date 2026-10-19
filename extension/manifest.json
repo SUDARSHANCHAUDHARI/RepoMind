@@ -3,7 +3,11 @@
   "name": "RepoMind AI",
   "version": "1.0.0",
   "description": "Instantly analyze any GitHub repo with AI. Get architecture, features, and a rebuild plan.",
-  "permissions": ["activeTab"],
+  "permissions": ["activeTab", "storage"],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  },
   "action": {
     "default_popup": "popup.html",
     "default_icon": {

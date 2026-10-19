@@ -155,11 +155,8 @@ Setup:
 4. Open any `github.com/owner/repo` page.
 5. Click the RepoMind extension icon.
 
-Before production release, update `extension/popup.js`:
-
-```js
-const APP_URL = "https://YOUR_APP_DOMAIN";
-```
+The extension calls `https://repomind.sudarshantechlabs.com` by default. To use another app URL
+(for example `http://localhost:3000` in local development), set it on the extension's Options page.
 
 See [extension/README.md](extension/README.md) for the extension-specific guide.
 

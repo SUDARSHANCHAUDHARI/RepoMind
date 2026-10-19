@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>RepoMind AI options</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif; padding: 16px; min-width: 320px; }
+    label { display: block; font-weight: 600; margin-bottom: 6px; }
+    input { width: 100%; padding: 6px; margin-bottom: 8px; box-sizing: border-box; }
+    p { font-size: 12px; margin: 6px 0; }
+  </style>
+</head>
+<body>
+  <form id="options-form">
+    <label for="app-url">RepoMind app URL</label>
+    <input id="app-url" type="url" required />
+    <p>Leave the default for the deployed app. Use <code>http://localhost:3000</code> for local development.</p>
+    <button type="submit">Save</button>
+    <button type="button" id="btn-default">Reset to default</button>
+    <p id="status" role="status"></p>
+  </form>
+  <script src="config.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>
