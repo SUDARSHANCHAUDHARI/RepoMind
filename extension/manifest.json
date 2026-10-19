@@ -4,6 +4,8 @@
   "version": "1.0.0",
   "description": "Instantly analyze any GitHub repo with AI. Get architecture, features, and a rebuild plan.",
   "permissions": ["activeTab", "storage"],
+  "host_permissions": ["https://repomind.sudarshantechlabs.com/*"],
+  "optional_host_permissions": ["https://*/*", "http://localhost/*"],
   "options_ui": {
     "page": "options.html",
     "open_in_tab": false

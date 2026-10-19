@@ -7,3 +7,10 @@ async function getAppUrl() {
   const { appUrl } = await chrome.storage.sync.get({ appUrl: DEFAULT_APP_URL });
   return (appUrl || DEFAULT_APP_URL).replace(/\/+$/, "");
 }
+
+// The user's own OpenAI key (bring-your-own-key, sent as x-api-key). Kept in
+// chrome.storage.local so it never syncs to other devices.
+async function getApiKey() {
+  const { apiKey } = await chrome.storage.local.get({ apiKey: "" });
+  return apiKey;
+}

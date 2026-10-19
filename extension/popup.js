@@ -52,6 +52,9 @@ document.getElementById("btn-analyze").addEventListener("click", () => analyze()
 document.getElementById("btn-retry").addEventListener("click", () => {
   show("state-idle");
 });
+document.getElementById("btn-options").addEventListener("click", () => {
+  chrome.runtime.openOptionsPage();
+});
 document.getElementById("btn-reset").addEventListener("click", () => {
   lastResult = null;
   show("state-idle");
@@ -63,6 +66,15 @@ document.getElementById("btn-open-full").addEventListener("click", async () => {
 });
 
 async function analyze() {
+  const apiKey = await getApiKey();
+  document.getElementById("btn-options").style.display = apiKey ? "none" : "block";
+  if (!apiKey) {
+    document.getElementById("error-text").textContent =
+      "Add your OpenAI API key on the Options page to analyze a repo.";
+    show("state-error");
+    return;
+  }
+
   show("state-loading");
 
   let msgIndex = 0;
@@ -75,7 +87,7 @@ async function analyze() {
   try {
     const res = await fetch(`${await getAppUrl()}/api/analyze`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "x-api-key": apiKey },
       body: JSON.stringify({ repoUrl: currentUrl }),
     });
 

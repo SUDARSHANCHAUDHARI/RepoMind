@@ -15,6 +15,9 @@
     <label for="app-url">RepoMind app URL</label>
     <input id="app-url" type="url" required />
     <p>Leave the default for the deployed app. Use <code>http://localhost:3000</code> for local development.</p>
+    <label for="api-key">OpenAI API key</label>
+    <input id="api-key" type="password" autocomplete="off" placeholder="sk-..." />
+    <p>Sent only to the RepoMind app as <code>x-api-key</code>. Stored on this device only. Leave empty to remove it.</p>
     <button type="submit">Save</button>
     <button type="button" id="btn-default">Reset to default</button>
     <p id="status" role="status"></p>
