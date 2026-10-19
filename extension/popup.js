@@ -1,6 +1,4 @@
-// ─── Config ───────────────────────────────────────────────────────────────────
-// Change this to your deployed URL in production
-const APP_URL = "http://localhost:3000";
+// App URL comes from getAppUrl() in config.js (deployed default, Options page override).
 
 // ─── State ────────────────────────────────────────────────────────────────────
 let currentUrl = "";
@@ -58,10 +56,10 @@ document.getElementById("btn-reset").addEventListener("click", () => {
   lastResult = null;
   show("state-idle");
 });
-document.getElementById("btn-open-full").addEventListener("click", () => {
+document.getElementById("btn-open-full").addEventListener("click", async () => {
   if (!lastResult) return;
   const encoded = encodeURIComponent(currentUrl);
-  chrome.tabs.create({ url: `${APP_URL}?repo=${encoded}` });
+  chrome.tabs.create({ url: `${await getAppUrl()}?repo=${encoded}` });
 });
 
 async function analyze() {
@@ -75,7 +73,7 @@ async function analyze() {
   }, 2000);
 
   try {
-    const res = await fetch(`${APP_URL}/api/analyze`, {
+    const res = await fetch(`${await getAppUrl()}/api/analyze`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ repoUrl: currentUrl }),

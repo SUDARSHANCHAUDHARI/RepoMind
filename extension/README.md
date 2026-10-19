@@ -15,16 +15,18 @@
 4. View stack, architecture, and core features in the popup
 5. Click **Open Full Analysis** to see the complete breakdown on the web app
 
-## Production
+## App URL
 
-In `popup.js`, change:
-```js
-const APP_URL = "http://localhost:3000";
-```
-to your deployed URL, e.g.:
-```js
-const APP_URL = "https://YOUR_APP_DOMAIN";
-```
+The extension calls the deployed app at `https://repomind.sudarshantechlabs.com` by default
+(`DEFAULT_APP_URL` in `config.js`).
+
+To point it somewhere else, for example `http://localhost:3000` during local development:
+
+1. Open `chrome://extensions`, find RepoMind AI and click **Details** → **Extension options**
+   (or right-click the toolbar icon → **Options**).
+2. Enter the app URL and click **Save**. **Reset to default** restores the deployed URL.
+
+The setting is stored in `chrome.storage.sync`, so it survives reloads of the unpacked extension.
 
 ## Icons
 
