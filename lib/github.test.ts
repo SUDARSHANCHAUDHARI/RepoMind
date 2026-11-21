@@ -36,6 +36,25 @@ describe("parseOwnerRepo", () => {
     );
   });
 
+  it("throws on path traversal or query characters in owner/repo", () => {
+    for (const bad of [
+      "https://github.com/../user",
+      "https://github.com/owner/..",
+      "https://github.com/../user?x=",
+      "https://github.com/owner/repo#frag",
+      "https://github.com/owner/re%2Fpo",
+    ]) {
+      expect(() => parseOwnerRepo(bad)).toThrow(/Invalid GitHub URL/);
+    }
+  });
+
+  it("keeps a repo URL with extra path segments working", () => {
+    expect(parseOwnerRepo("https://github.com/vercel/next.js/tree/canary")).toEqual({
+      owner: "vercel",
+      repo: "next.js",
+    });
+  });
+
   it("throws on a malformed string", () => {
     expect(() => parseOwnerRepo("not a url")).toThrow(/Invalid GitHub URL/);
   });

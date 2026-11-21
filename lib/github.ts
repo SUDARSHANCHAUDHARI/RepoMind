@@ -20,8 +20,13 @@ function decodeBase64(content: string): string {
 export function parseOwnerRepo(repoUrl: string): { owner: string; repo: string } {
   const clean = repoUrl.replace(/^https?:\/\//, "").replace(/\/$/, "");
   const match = clean.match(/github\.com\/([^/]+)\/([^/]+)/);
-  if (!match) throw new Error("Invalid GitHub URL. Example: https://github.com/owner/repo");
-  return { owner: match[1], repo: match[2].replace(/\.git$/, "") };
+  const owner = match?.[1] ?? "";
+  const repo = (match?.[2] ?? "").replace(/\.git$/, "");
+  // Names go into an api.github.com path: allow GitHub's name charset only, so "..", "?" or "#"
+  // cannot steer the request (with the server GITHUB_TOKEN) to another endpoint.
+  const valid = (s: string) => /^[A-Za-z0-9_.-]+$/.test(s) && !/^\.+$/.test(s);
+  if (!valid(owner) || !valid(repo)) throw new Error("Invalid GitHub URL. Example: https://github.com/owner/repo");
+  return { owner, repo };
 }
 
 async function getJSON(url: string): Promise<unknown> {
